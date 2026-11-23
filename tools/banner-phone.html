@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<!--
+  The phone screen in the README banner: the app's own markup and stylesheet, as it looks after a
+  phrase has been heard in both languages with the text shown. tools/banner.html shows it in a
+  420x860 frame, so the app's phone layout applies.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Check Your Language phone</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=block" rel="stylesheet" />
+<link rel="stylesheet" href="../CheckYourLanguage/wwwroot/css/app.css" />
+<style>
+    html, body { overflow: hidden; }
+    * { animation: none !important; transition: none !important; }
+</style>
+</head>
+<body>
+<main class="game"><header class="topbar"><h1>Check Your <span>Language</span></h1>
+        <div class="toolbar"><button class="icon-btn text-btn">Aa</button></div></header>
+
+    <div class="pickers" style="--count:8"><span class="row-label">Hear</span>
+        <nav class="langs"><button class="lang-chip on"><img class="flag" src="../CheckYourLanguage/wwwroot/flags/dk.svg" alt="" /></button><button class="lang-chip"><img class="flag" src="../CheckYourLanguage/wwwroot/flags/gb.svg" alt="" /></button><button class="lang-chip"><img class="flag" src="../CheckYourLanguage/wwwroot/flags/de.svg" alt="" /></button><button class="lang-chip"><img class="flag" src="../CheckYourLanguage/wwwroot/flags/ch.svg" alt="" /></button><button class="lang-chip"><img class="flag" src="../CheckYourLanguage/wwwroot/flags/fr.svg" alt="" /></button><button class="lang-chip"><img class="flag" src="../CheckYourLanguage/wwwroot/flags/it.svg" alt="" /></button><button class="lang-chip"><img class="flag" src="../CheckYourLanguage/wwwroot/flags/es.svg" alt="" /></button><button class="lang-chip"><img class="flag" src="../CheckYourLanguage/wwwroot/flags/nl.svg" alt="" /></button></nav>
+        <button class="swap-btn">⇅</button>
+        <span class="row-label">Then</span>
+        <nav class="langs"><button class="lang-chip to"><img class="flag" src="../CheckYourLanguage/wwwroot/flags/dk.svg" alt="" /></button><button class="lang-chip to"><img class="flag" src="../CheckYourLanguage/wwwroot/flags/gb.svg" alt="" /></button><button class="lang-chip to"><img class="flag" src="../CheckYourLanguage/wwwroot/flags/de.svg" alt="" /></button><button class="lang-chip to"><img class="flag" src="../CheckYourLanguage/wwwroot/flags/ch.svg" alt="" /></button><button class="lang-chip to"><img class="flag" src="../CheckYourLanguage/wwwroot/flags/fr.svg" alt="" /></button><button class="lang-chip to on"><img class="flag" src="../CheckYourLanguage/wwwroot/flags/it.svg" alt="" /></button><button class="lang-chip to"><img class="flag" src="../CheckYourLanguage/wwwroot/flags/es.svg" alt="" /></button><button class="lang-chip to"><img class="flag" src="../CheckYourLanguage/wwwroot/flags/nl.svg" alt="" /></button></nav></div>
+
+    <div class="play"><span class="eyebrow counter">Phrase 12 of 499</span>
+        <section class="phrase from"><button class="orb"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 9.2v5.6h3.8l4.9 4V5.2l-4.9 4H3.5z" fill="currentColor"></path><path d="M15.5 8.7a4.6 4.6 0 0 1 0 6.6M18.3 6a8.4 8.4 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"></path></svg></button>
+            <div class="phrase-body"><span class="lang-name"><img class="flag" src="../CheckYourLanguage/wwwroot/flags/dk.svg" alt="" />Danish</span><span class="phrase-text">Hvor er badeværelset?</span></div></section>
+        <div class="arrow" aria-hidden="true">↓</div>
+        <section class="phrase to"><button class="orb playing"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 9.2v5.6h3.8l4.9 4V5.2l-4.9 4H3.5z" fill="currentColor"></path><path d="M15.5 8.7a4.6 4.6 0 0 1 0 6.6M18.3 6a8.4 8.4 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"></path></svg></button>
+            <div class="phrase-body"><span class="lang-name"><img class="flag" src="../CheckYourLanguage/wwwroot/flags/it.svg" alt="" />Italian</span><span class="phrase-text">Dov'è il bagno?</span></div></section>
+        <div class="next-row"><button class="primary-btn">Next phrase</button></div></div>
+
+    <footer class="credits">Made with love 💛 (c) 2026 Per Hejndorf, Kreaton · Voices are computer-generated</footer></main>
+</body>
+</html>

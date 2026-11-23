@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "CheckYourLanguage",
+      "runtimeExecutable": "dotnet",
+      "runtimeArgs": ["run", "--project", "CheckYourLanguage", "--launch-profile", "http", "--no-launch-browser"],
+      "port": 5163
+    }
+  ]
+}
