@@ -24,26 +24,32 @@ are `ch`.
 
 ## How it works
 
-1. Pick the language to hear first (**Hear**, violet) and the one to hear it in next (**Then**, gold).
-   Picking a language that is already in the other row swaps the two, and ⇅ swaps them as well.
-2. **Start**: a random phrase is spoken in the first language. Work out what it means, or how you
+1. Pick the language to see or hear first (**Hear**, violet) and the one to get it in next (**Then**,
+   gold). Picking a language that is already in the other row swaps the two, and ⇅ swaps them as well.
+2. **Start**: a random phrase comes up in the first language. Work out what it means, or how you
    would say it in the second.
-3. **Hear it in …**: the same phrase is spoken in the second language.
-4. **Next phrase**, or **Skip** before hearing the second language.
+3. **Hear it in …** / **Show it in …**: the same phrase in the second language.
+4. **Next phrase**, or **Skip** before getting the second language.
 
-The text of each side stays hidden until **Show text** is clicked. **Aa** in the top bar shows the
-text straight away instead.
+Phrases come in random order, and every one comes once before any repeats. The two languages, the
+mode and the **Aa** setting are kept in the browser.
 
-- Tapping a speaker plays that side again.
-- Phrases come in random order, and every one comes once before any repeats.
-- The two languages and the **Aa** setting are kept in the browser.
+### Modes
+
+| Mode | Sound | Text |
+|---|---|---|
+| **🎧 Listen** | Each side is spoken as it comes up; tap a speaker to hear it again | Hidden until **Show text**, or always shown with **Aa** |
+| **👁 Read** | Only when you tap a speaker | Always shown |
+| **🔇 Silent** | None, and no speakers | Always shown |
+
+Read and Silent always show the text, so **Aa** is then on and cannot be switched off.
 
 ### Keyboard
 
 | Key | Does |
 |---|---|
-| `Enter` | Start, hear it in the second language, next phrase |
-| `Space` | Play the last one again |
+| `Enter` | Start, hear or show it in the second language, next phrase |
+| `Space` | Play the last one again (in Read, the last one shown) |
 | `T` | Show the text |
 | `1` / `2` | Play the first / second language |
 

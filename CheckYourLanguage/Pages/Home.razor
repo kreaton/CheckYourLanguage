@@ -10,15 +10,17 @@
 <main class="game">
     <header class="topbar">
         <h1>Check Your <span>Language</span></h1>
-        <div class="toolbar">
-            @if (_game is not null)
-            {
-                <button class="icon-btn text-btn @(_game.AlwaysText ? "on" : "")" @onclick="ToggleAlwaysText"
-                        aria-pressed="@_game.AlwaysText"
-                        title="@(_game.AlwaysText ? "Always showing the text: click to hide it until asked for" : "Always show the text")"
-                        aria-label="Always show the text">Aa</button>
-            }
-        </div>
+        @if (_game is not null)
+        {
+            @* The mode switch sits here on wide screens and below the languages on narrow ones. *@
+            <div class="mode-top">@ModeSwitch</div>
+            <div class="toolbar">
+                @* Read and Silent always show the text, so Aa is then on and cannot be changed. *@
+                <button class="icon-btn text-btn @(_game.TextFirst ? "on" : "")" @onclick="ToggleAlwaysText"
+                        disabled="@(_game.Mode != Mode.Listen)" aria-pressed="@_game.TextFirst"
+                        title="@TextButtonTitle" aria-label="Always show the text">Aa</button>
+            </div>
+        }
     </header>
 
     @if (_error is not null)
@@ -55,19 +57,38 @@
                 }
             </nav>
         </div>
+        <div class="mode-row">@ModeSwitch</div>
 
         <div class="play">
             @if (_game.Current is null)
             {
                 <section class="intro">
                     <span class="eyebrow">@_game.From.Name → @_game.To.Name · @_game.Book.Count phrases</span>
-                    <p>Hear an everyday phrase in <strong><em>@_game.From.Name</em></strong>. Work out what it means
-                        or how you would say it, then hear it in <strong><em>@_game.To.Name</em></strong>.</p>
-                    <p class="muted">
-                        The text stays hidden until you ask for it (or switch on <strong>Aa</strong> to always see it).
-                        <span class="on-keys"><kbd>Space</kbd> plays it again, <kbd>T</kbd> shows the text and
-                            <kbd>Enter</kbd> moves on.</span>
-                    </p>
+                    @switch (_game.Mode)
+                    {
+                        case Mode.Listen:
+                            <p>Hear an everyday phrase in <strong><em>@_game.From.Name</em></strong>. Work out what it
+                                means or how you would say it, then hear it in <strong><em>@_game.To.Name</em></strong>.</p>
+                            <p class="muted">
+                                The text stays hidden until you ask for it (or switch on <strong>Aa</strong> to always see it).
+                                <span class="on-keys"><kbd>Space</kbd> plays it again, <kbd>T</kbd> shows the text and
+                                    <kbd>Enter</kbd> moves on.</span>
+                            </p>
+                            break;
+                        case Mode.Read:
+                            <p>Read an everyday phrase in <strong><em>@_game.From.Name</em></strong>. Work out what it
+                                means or how you would say it, then see it in <strong><em>@_game.To.Name</em></strong>.</p>
+                            <p class="muted">
+                                Tap a speaker to hear it.
+                                <span class="on-keys"><kbd>Space</kbd> plays the last one shown and <kbd>Enter</kbd> moves on.</span>
+                            </p>
+                            break;
+                        default:
+                            <p>Read an everyday phrase in <strong><em>@_game.From.Name</em></strong>. Work out what it
+                                means or how you would say it, then see it in <strong><em>@_game.To.Name</em></strong>.</p>
+                            <p class="muted">No sound in this mode. <span class="on-keys"><kbd>Enter</kbd> moves on.</span></p>
+                            break;
+                    }
                     @* Browsers only allow sound after a user gesture, so the first phrase waits for this one. *@
                     <button class="primary-btn" @onclick="NextPhrase">Start <kbd>Enter</kbd></button>
                 </section>
@@ -78,10 +99,13 @@
                 <span class="eyebrow counter">Phrase @_game.Seen of @_game.Book.Count</span>
 
                 <section class="phrase from" @key="@($"from-{_round}")">
-                    <button class="orb @(_playing == Side.From ? "playing" : "")" @onclick="() => Play(Side.From)"
-                            aria-label="Play it again in @_game.From.Name" title="Play it again (Space)">
-                        <SpeakerIcon />
-                    </button>
+                    @if (_game.HasSound)
+                    {
+                        <button class="orb @(_playing == Side.From ? "playing" : "")" @onclick="() => Play(Side.From)"
+                                aria-label="Play it in @_game.From.Name" title="Play it (1)">
+                            <SpeakerIcon />
+                        </button>
+                    }
                     <div class="phrase-body">
                         <span class="lang-name"><img class="flag" src="@_game.From.FlagFile" alt="" />@_game.From.Name</span>
                         @if (_game.FromTextShown)
@@ -100,10 +124,13 @@
                 <section class="phrase to @(translated ? "" : "waiting")" @key="@($"to-{_round}")">
                     @if (translated)
                     {
-                        <button class="orb @(_playing == Side.To ? "playing" : "")" @onclick="() => Play(Side.To)"
-                                aria-label="Play it again in @_game.To.Name" title="Play it again (Space)">
-                            <SpeakerIcon />
-                        </button>
+                        @if (_game.HasSound)
+                        {
+                            <button class="orb @(_playing == Side.To ? "playing" : "")" @onclick="() => Play(Side.To)"
+                                    aria-label="Play it in @_game.To.Name" title="Play it (2)">
+                                <SpeakerIcon />
+                            </button>
+                        }
                         <div class="phrase-body">
                             <span class="lang-name"><img class="flag" src="@_game.To.FlagFile" alt="" />@_game.To.Name</span>
                             @if (_game.ToTextShown)
@@ -120,7 +147,7 @@
                     {
                         <button class="hear-btn" @onclick="Translate">
                             <img class="flag" src="@_game.To.FlagFile" alt="" />
-                            <span>Hear it in @_game.To.Name</span>
+                            <span>@(_game.AutoPlay ? "Hear" : "Show") it in @_game.To.Name</span>
                             <kbd class="on-keys">Enter</kbd>
                         </button>
                     }
@@ -156,7 +183,28 @@
     private int _sayToken;
     private int _round;
 
-    private sealed record SavedState(string From, string To, bool AlwaysText);
+    private sealed record SavedState(string From, string To, bool AlwaysText, Mode Mode = Mode.Listen);
+
+    private RenderFragment ModeSwitch => @<div class="segmented" role="group" aria-label="Mode">
+        @foreach (var (mode, icon, title) in Modes)
+        {
+            <button class="@(_game!.Mode == mode ? "on" : "")" aria-pressed="@(_game.Mode == mode)" title="@title"
+                    @onclick="() => SetMode(mode)">
+                <span aria-hidden="true">@icon</span> @mode
+            </button>
+        }
+    </div>;
+
+    private static readonly (Mode Mode, string Icon, string Title)[] Modes =
+    [
+        (Mode.Listen, "🎧", "Hear each phrase; show the text when you want it"),
+        (Mode.Read, "👁", "Read each phrase; tap a speaker to hear it"),
+        (Mode.Silent, "🔇", "Text only, no sound"),
+    ];
+
+    private string TextButtonTitle => _game!.Mode != Mode.Listen
+        ? $"{_game.Mode} always shows the text"
+        : _game.AlwaysText ? "Always showing the text: click to hide it until asked for" : "Always show the text";
 
     protected override async Task OnInitializedAsync()
     {
@@ -188,6 +236,7 @@
                 if (System.Text.Json.JsonSerializer.Deserialize<SavedState>(json) is { } saved)
                 {
                     _game.AlwaysText = saved.AlwaysText;
+                    _game.SetMode(Enum.IsDefined(saved.Mode) ? saved.Mode : Mode.Listen);
                     _game.SetFrom(_game.Book.Get(saved.From, _game.From));
                     _game.SetTo(_game.Book.Get(saved.To, _game.To));
                 }
@@ -260,9 +309,18 @@
         await SaveState();
     }
 
+    private async Task SetMode(Mode mode)
+    {
+        if (_game is null || mode == _game.Mode) return;
+        _game.SetMode(mode);
+        if (!_game.HasSound) StopVoice();
+        await SaveState();
+    }
+
     private async Task ToggleAlwaysText()
     {
-        _game!.AlwaysText = !_game.AlwaysText;
+        if (_game!.Mode != Mode.Listen) return;
+        _game.AlwaysText = !_game.AlwaysText;
         if (_game.AlwaysText) _game.ShowText();
         await SaveState();
     }
@@ -272,22 +330,38 @@
         if (_game is null) return;
         _game.NextPhrase();
         _round++;
-        _ = Play(Side.From);
-        if (_game.Upcoming is { } next) _ = JS.InvokeVoidAsync("voice.preload", _game.Book.Audio(next, _game.From)).AsTask();
-        _ = JS.InvokeVoidAsync("voice.preload", _game.ToAudio).AsTask();
+        _lastPlayed = Side.From;
+        if (_game.AutoPlay) _ = Play(Side.From);
+        else StopVoice();
+        if (!_game.HasSound) return;
+        // Listen needs the next phrase soon; Read may need this one's recordings at a tap.
+        if (_game.AutoPlay && _game.Upcoming is { } next) Preload(_game.Book.Audio(next, _game.From));
+        else Preload(_game.FromAudio);
+        Preload(_game.ToAudio);
     }
 
     private void Translate()
     {
         if (_game is null || _game.Stage != Stage.Heard) return;
         _game.Translate();
-        if (_game.AlwaysText) _game.ShowToText();
-        _ = Play(Side.To);
+        _lastPlayed = Side.To;
+        if (_game.TextFirst) _game.ShowToText();
+        if (_game.AutoPlay) _ = Play(Side.To);
+        else StopVoice();
+    }
+
+    private void Preload(string url) => _ = JS.InvokeVoidAsync("voice.preload", url).AsTask();
+
+    private void StopVoice()
+    {
+        _sayToken++;
+        _playing = Side.None;
+        _ = JS.InvokeVoidAsync("voice.stop").AsTask();
     }
 
     private async Task Play(Side side)
     {
-        if (_game?.Current is null || side == Side.None) return;
+        if (_game?.Current is null || side == Side.None || !_game.HasSound) return;
         if (side == Side.To && _game.Stage != Stage.Translated) return;
         var url = side == Side.From ? _game.FromAudio : _game.ToAudio;
         var token = ++_sayToken;
@@ -310,7 +384,7 @@
     private async Task SaveState()
     {
         if (_game is null) return;
-        var json = System.Text.Json.JsonSerializer.Serialize(new SavedState(_game.From.Code, _game.To.Code, _game.AlwaysText));
+        var json = System.Text.Json.JsonSerializer.Serialize(new SavedState(_game.From.Code, _game.To.Code, _game.AlwaysText, _game.Mode));
         await JS.InvokeVoidAsync("gameStore.save", StateKey, json);
     }
 

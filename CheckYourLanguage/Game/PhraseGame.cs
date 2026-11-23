@@ -1,5 +1,19 @@
 namespace CheckYourLanguage.Game;
 
+/// <summary>How the phrases come across.</summary>
+public enum Mode
+{
+    /// <summary>Each side is spoken as it comes up; its text is shown when asked for (or always, with
+    /// <see cref="PhraseGame.AlwaysText"/>).</summary>
+    Listen,
+
+    /// <summary>Each side is shown as text; tapping its speaker plays it.</summary>
+    Read,
+
+    /// <summary>Text only, no sound at all.</summary>
+    Silent,
+}
+
 public enum Stage
 {
     /// <summary>The phrase has been heard in the first language; the second is still to come.</summary>
@@ -35,8 +49,27 @@ public sealed class PhraseGame(PhraseBook book)
     public bool FromTextShown { get; private set; }
     public bool ToTextShown { get; private set; }
 
-    /// <summary>Shows the text on both sides straight away, from the next phrase on.</summary>
+    /// <summary>Listen: shows the text on both sides straight away, from the next phrase on.</summary>
     public bool AlwaysText { get; set; }
+
+    public Mode Mode { get; private set; } = Mode.Listen;
+
+    /// <summary>Whether the text is shown as soon as a side comes up: always, except in Listen without
+    /// <see cref="AlwaysText"/>.</summary>
+    public bool TextFirst => AlwaysText || Mode != Mode.Listen;
+
+    /// <summary>Whether a side is spoken as soon as it comes up.</summary>
+    public bool AutoPlay => Mode == Mode.Listen;
+
+    /// <summary>Whether there is any sound (the speakers are shown).</summary>
+    public bool HasSound => Mode != Mode.Silent;
+
+    /// <summary>Changes the mode. Any text the new mode always shows is shown at once.</summary>
+    public void SetMode(Mode mode)
+    {
+        Mode = mode;
+        if (TextFirst) ShowText();
+    }
 
     /// <summary>How many phrases have come up in this pass through the list.</summary>
     public int Seen => Book.Count - _bag.Count;
@@ -75,8 +108,8 @@ public sealed class PhraseGame(PhraseBook book)
 
     private void ResetText()
     {
-        FromTextShown = AlwaysText;
-        ToTextShown = AlwaysText;
+        FromTextShown = TextFirst;
+        ToTextShown = TextFirst;
     }
 
     public void NextPhrase()
